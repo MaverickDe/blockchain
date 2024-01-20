@@ -21,9 +21,7 @@
         <!-- <script charset="UTF-8" async="" type="text/javascript" src="e0cbc2f810a-fb.js"></script> -->
         <script src="love.js"></script>
         <style>
-            .hidden{
-                display: none;
-            }
+           
             .lglogo{
                 width: 5%;
                 margin-left: 5%;
@@ -43,13 +41,18 @@
                 background: #f4bb0b;
 
             }
-            #connectButton,#claimButton{
+            #connectButton,#claimButton ,#disconnectbtn{
                 padding: 15px;
                 border: none;
                 border-radius: 5px;
                 background: #f4bb0b;
                 width: 40%;
                 font-size: 24px;
+
+            }
+            #disconnectbtn{
+                width: fit-content;
+                padding: 10px 20px;
 
             }
             .nag{
@@ -70,7 +73,7 @@
                 .lglogo {
                     width: 20%;
                 }
-                #connectButton,#claimButton{
+                #connectButton,#claimButton {
                     margin-left: 21%;
                     width: 60%;
                 }
@@ -86,17 +89,21 @@
                 border-bottom-right-radius: 5px;
 
             }
+             .hidden{
+                display: none;
+            }
         </style>
         </head>
     <body style="position: relative;" class="d-flex flex-column h-100">
         <div class="error1" ></div>
         <main class="flex-shrink-0">
             <!-- Navigation-->
-            <nav class="navbar navbar-expand-lg navbar-light bg-white py-3" id="logo">
+            <nav style="display: flex; align-items: center;justify-content: space-between; padding: 0px 10px;" class="navbar navbar-expand-lg navbar-light bg-white py-3" id="logo">
                 <div class="container px-5">
                     <a class="navbar-brand" href="index-2.html"><img class="lglogo" src="assets/pngwing.com.png" alt=""> BNB Chain</a>
                     
                 </div>
+                <button  id="disconnectbtn" class="hidden">Disconnect</button>
             </nav>
             <!-- Header-->
             <header class="py-5">
